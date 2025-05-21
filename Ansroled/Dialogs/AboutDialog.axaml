@@ -1,0 +1,57 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:Ansroled.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="500"
+        x:Class="Ansroled.Dialogs.AboutDialog"
+        x:DataType="vm:AboutDialogViewModel"
+        Title="About"
+        CanResize="False"
+        SizeToContent="Height"
+        Width="500"
+        WindowStartupLocation="CenterOwner"
+        Background="#2b2b2b">
+    
+    <Window.Styles>
+        <Style Selector="TextBlock.LinkStyle">
+            <Setter Property="Foreground" Value="#3674f0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+    </Window.Styles>
+    
+    <StackPanel Spacing="20" Margin="30, 30,30,10">
+        <StackPanel Spacing="10">
+            <Image Source="/Assets/Icons/Icon.png" Width="100"/>
+            <TextBlock Text="Ansroled" HorizontalAlignment="Center" FontSize="18"/>
+        </StackPanel>
+        <StackPanel Spacing="5">
+            <TextBlock Text="Version 1.0.0"/>
+            <TextBlock Text="Copyright (c) 2025 Alexander Preibisch"/>
+            <TextBlock Text="MIT License"/>
+            <TextBlock Text="GitHub Repository" Classes="LinkStyle" PointerPressed="OnLinkClicked" Tag="https://github.com/theaxelander/Ansroled"/>
+        </StackPanel>
+        <StackPanel Spacing="5">
+            <TextBlock Text="3rd party software used:"/>
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto, Auto, Auto, Auto, Auto">
+                <TextBlock Text="Avalonia" Tag="https://github.com/AvaloniaUI/Avalonia/blob/master/licence.md"/>
+                <TextBlock Grid.Column="1" Grid.Row="0" Text="MIT" Classes="LinkStyle" PointerPressed="OnLinkClicked"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="CommunityToolkit" Tag="https://github.com/CommunityToolkit/dotnet/blob/main/License.md"/>
+                <TextBlock Grid.Column="1" Grid.Row="1" Text="MIT" Classes="LinkStyle" PointerPressed="OnLinkClicked"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="2" Text="PubNet-Deploy" Tag="https://github.com/kuiperzone/PupNet-Deploy/blob/main/LICENSE"/>
+                <TextBlock Grid.Column="1" Grid.Row="2" Text="AGPL-3.0 license" Classes="LinkStyle" PointerPressed="OnLinkClicked"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="3" Text="TextMateSharp" Tag="https://github.com/danipen/TextMateSharp/blob/master/LICENSE.md"/>
+                <TextBlock Grid.Column="1" Grid.Row="3" Text="MIT" Classes="LinkStyle" PointerPressed="OnLinkClicked"/>
+                
+                <TextBlock Grid.Column="0" Grid.Row="4" Text=".NET runtime" Tag="https://github.com/dotnet/runtime/blob/main/LICENSE.TXT"/>
+                <TextBlock Grid.Column="1" Grid.Row="4" Text="MIT" Classes="LinkStyle" PointerPressed="OnLinkClicked"/>
+            </Grid>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Padding="15,5,15,6" Content="Close" Command="{Binding CloseCommand}"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

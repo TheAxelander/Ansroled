@@ -64,6 +64,7 @@ public partial class MainWindowViewModel : ViewModelBase
     public Interaction<CreateRoleDialogViewModel, NewRoleResponse?> NewRoleDialog { get; }
     public Interaction<CreateFileDialogViewModel, NewFileResponse?> NewFileDialog { get; }
     public Interaction<DeleteFileDialogViewModel, DeleteFileResponse?> DeleteFileDialog { get; }
+    public Interaction<AboutDialogViewModel, object?> AboutDialog { get; }
     
     private bool CanExecuteWithProject => CurrentFolder is not null;
     private bool CanExecuteWithRole => !string.IsNullOrWhiteSpace(SelectedRole.RoleName);
@@ -73,6 +74,7 @@ public partial class MainWindowViewModel : ViewModelBase
         NewRoleDialog = new();
         NewFileDialog = new();
         DeleteFileDialog = new();
+        AboutDialog = new();
 
         _tasksEditorGridSetting = GridSetting.Box0;
         _defaultsEditorGridSetting = GridSetting.Box1;
@@ -257,5 +259,18 @@ public partial class MainWindowViewModel : ViewModelBase
         if (TemplatesEditorGridSetting != GridSetting.Hidden) TemplatesEditorGridSetting = GridSetting.GetBoxFromIndex(++index);
         if (HandlersEditorGridSetting != GridSetting.Hidden) HandlersEditorGridSetting = GridSetting.GetBoxFromIndex(++index);
         if (FilesEditorGridSetting != GridSetting.Hidden) FilesEditorGridSetting = GridSetting.GetBoxFromIndex(++index);
+    }
+    
+    [RelayCommand]
+    private async Task ShowAboutDialog(CancellationToken token)
+    {
+        try
+        {
+            await AboutDialog.Handle(new());
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 }

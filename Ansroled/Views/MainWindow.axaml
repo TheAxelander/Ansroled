@@ -110,6 +110,9 @@
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
+            <MenuItem Header="?">
+                <MenuItem Header="About..." Command="{Binding ShowAboutDialogCommand}"/>
+            </MenuItem>
             <MenuItem Header="Dev" IsVisible="{x:Static helpers:BuildConfigHelper.IsDebug}">
                 <MenuItem Header="Load Data" Command="{Binding LoadDataCommand}">
                     <MenuItem.Icon>

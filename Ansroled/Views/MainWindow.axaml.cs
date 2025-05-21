@@ -99,6 +99,7 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         this.WhenActivated(action => action(ViewModel.NewRoleDialog.RegisterHandler(NewRoleInteractionHandler)));
         this.WhenActivated(action => action(ViewModel.NewFileDialog.RegisterHandler(NewFileInteractionHandler)));
         this.WhenActivated(action => action(ViewModel.DeleteFileDialog.RegisterHandler(DeleteFileInteractionHandler)));
+        this.WhenActivated(action => action(ViewModel.AboutDialog.RegisterHandler(AboutInteractionHandler)));
     }
     
     private void InitializeComponent()
@@ -136,6 +137,17 @@ public partial class MainWindow : ReactiveWindow<MainWindowViewModel>
         };
 
         var result = await dialog.ShowDialog<DeleteFileResponse?>(this);
+        interaction.SetOutput(result);
+    }
+    
+    private async Task AboutInteractionHandler(IInteractionContext<AboutDialogViewModel, object?> interaction)
+    {
+        var dialog = new AboutDialog()
+        {
+            DataContext = interaction.Input
+        };
+
+        var result = await dialog.ShowDialog<object?>(this);
         interaction.SetOutput(result);
     }
 
