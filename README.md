@@ -1,17 +1,15 @@
-<p style="text-align:center;">
+<p align="center">
     <img src="Deploy/Icon.png" alt="Icon"/>
 </p>
-<h1 style="text-align:center;margin-top: -10px">Ansroled</h1>
-<h3 style="text-align:center;margin-top: -10px">An editor to manage Ansible roles</h3>
+<h1 align="center" style="margin-top: -10px">Ansroled</h1>
+<h3 align="center" style="margin-top: -10px">An editor to manage Ansible roles</h3>
 
 ## Introduction
 
 Ansroled gives the ability to manage an Ansible role with all its various files and sub-folders in one
 overview for a simplified editing experience.
 
-<div style="text-align:center;">
-  <img src="/Deploy/Screenshot.png" width="100%" alt="Screenshot"/>
-</div>
+![Screenshot](Deploy/Screenshot.png)
 
 ## How to run
 
