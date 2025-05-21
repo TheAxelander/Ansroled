@@ -1,0 +1,566 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:avaloniaEdit="clr-namespace:AvaloniaEdit;assembly=AvaloniaEdit"
+        xmlns:editing="https://github.com/avaloniaui/avaloniaedit"
+        xmlns:common="clr-namespace:Ansroled.Common"
+        xmlns:helpers="clr-namespace:Ansroled.Common.Helpers"
+        xmlns:vm="clr-namespace:Ansroled.ViewModels"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="450"
+        x:Class="Ansroled.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/Icons/Icon.ico"
+        Title="Ansroled"
+        Background="#2b2b2b">
+
+    <Design.DataContext>
+        <!-- This only sets the DataContext for the previewer in an IDE,
+             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
+        <vm:MainWindowViewModel/>
+    </Design.DataContext>
+    
+    <Window.Styles>
+        <Style Selector="Border.BorderStyle">
+            <Setter Property="BorderBrush" Value="#393939"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="GridSplitter">
+            <Setter Property="Background" Value="#393939"/>
+            <Setter Property="BorderThickness" Value="0"></Setter>
+        </Style>
+        <Style Selector="ListBox.RolesListBoxStyle">
+            <Setter Property="BorderBrush" Value="#393939"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+        <Style Selector="TextBlock.EditorHeaderStyle">
+            <Setter Property="Margin" Value="5"/>
+        </Style>
+        <Style Selector="TabStrip.TabStripStyle">
+            <Setter Property="Background" Value="#1c1c1c"/>
+            <Setter Property="Height" Value="35"/>
+        </Style>
+        <Style Selector="TabStripItem">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="10,0"/>
+            <Setter Property="MinHeight" Value="35"/>
+        </Style>
+        <Style Selector="avaloniaEdit|TextEditor.EditorStyle">
+            <Setter Property="Background" Value="#262626"/>
+            <Setter Property="FontFamily" Value="{StaticResource JetBrainsMono}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Light"/>
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ShowLineNumbers" Value="True"/>
+            <Setter Property="VerticalScrollBarVisibility" Value="Visible"/>
+        </Style>
+    </Window.Styles>
+
+    <DockPanel>
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="_File">
+                <MenuItem Header="_New Role..." Command="{Binding NewRoleCommand}"/>
+                <MenuItem Header="_Open..." Command="{Binding OpenFolderCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/folder_open.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <Separator/>
+                <MenuItem Header="E_xit"/>
+            </MenuItem>
+            <MenuItem Header="_Role">
+                <MenuItem Header="_Create File..." Command="{Binding CreateFileCommand}"/>
+                <MenuItem Header="_Delete File..." Command="{Binding DeleteFileCommand}"/>
+                <Separator/>
+                <MenuItem Header="_Save all" Command="{Binding SaveAllCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/save.png"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="_View">
+                <MenuItem Header="Defaults" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Defaults}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding DefaultsEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Vars" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Vars}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding VarsEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Meta" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Meta}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding MetaEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Templates" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Templates}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding TemplatesEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Handlers" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Handlers}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding HandlersEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem Header="Files" Command="{Binding SwitchEditorVisibilityCommand}" CommandParameter="{x:Static common:Editor.Files}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/check.png" IsVisible="{Binding FilesEditorGridSetting.IsVisible}"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+            <MenuItem Header="Dev" IsVisible="{x:Static helpers:BuildConfigHelper.IsDebug}">
+                <MenuItem Header="Load Data" Command="{Binding LoadDataCommand}">
+                    <MenuItem.Icon>
+                        <Image Source="/Assets/Icons/refresh.png" />
+                    </MenuItem.Icon>
+                </MenuItem>
+            </MenuItem>
+        </Menu>
+        <ListBox 
+            DockPanel.Dock="Left"
+            Classes="RolesListBoxStyle"
+            ItemsSource="{Binding Roles}" 
+            SelectedItem="{Binding SelectedRole, Mode=TwoWay}" 
+            MinWidth="250">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding RoleName}"/>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <StackPanel x:Name="StatusBar" Background="Purple" Height="25" DockPanel.Dock="Bottom" Orientation="Horizontal">
+            <TextBlock x:Name="StatusText" Text="Ready" Margin="5 0 0 0" VerticalAlignment="Center" FontSize="12"/>
+        </StackPanel>
+        <Grid ColumnDefinitions="*,4,*,4,*,4,*" RowDefinitions="*,4,*">
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" ResizeDirection="Columns"/>
+            <GridSplitter Grid.Column="3" Grid.Row="0" Grid.RowSpan="3" ResizeDirection="Columns"/>
+            <GridSplitter Grid.Column="5" Grid.Row="0" Grid.RowSpan="3" ResizeDirection="Columns"/>
+            <GridSplitter Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="6" ResizeDirection="Rows"/>
+            <!--Tasks-->
+            <Border 
+                Grid.Column="{Binding TasksEditorGridSetting.Column}" 
+                Grid.Row="{Binding TasksEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding TasksEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding TasksEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding TasksEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Tasks"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="TasksTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Tasks}"
+                            ItemsSource="{Binding SelectedRole.TasksFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="TasksEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #TasksTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Defaults-->
+            <Border 
+                Grid.Column="{Binding DefaultsEditorGridSetting.Column}" 
+                Grid.Row="{Binding DefaultsEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding DefaultsEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding DefaultsEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding DefaultsEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Defaults"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="DefaultsTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Defaults}"
+                            ItemsSource="{Binding SelectedRole.DefaultsFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="DefaultsEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #DefaultsTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Meta-->
+            <Border
+                Grid.Column="{Binding MetaEditorGridSetting.Column}" 
+                Grid.Row="{Binding MetaEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding MetaEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding MetaEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding MetaEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Meta"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="MetaTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Meta}"
+                            ItemsSource="{Binding SelectedRole.MetaFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="MetaEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #MetaTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Vars-->
+            <Border
+                Grid.Column="{Binding VarsEditorGridSetting.Column}" 
+                Grid.Row="{Binding VarsEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding VarsEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding VarsEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding VarsEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Vars"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="VarsTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Vars}"
+                            ItemsSource="{Binding SelectedRole.VarsFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                            <!--<TabStrip.ItemContainerStyle>
+                                
+                            </TabStrip.ItemContainerStyle>-->
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="VarsEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #VarsTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Templates-->
+            <Border
+                Grid.Column="{Binding TemplatesEditorGridSetting.Column}" 
+                Grid.Row="{Binding TemplatesEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding TemplatesEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding TemplatesEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding TemplatesEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Templates"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="TemplatesTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Templates}"
+                            ItemsSource="{Binding SelectedRole.TemplatesFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="TemplatesEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #TemplatesTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Handlers-->
+            <Border
+                Grid.Column="{Binding HandlersEditorGridSetting.Column}" 
+                Grid.Row="{Binding HandlersEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding HandlersEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding HandlersEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding HandlersEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Handlers"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="HandlersTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Handlers}"
+                            ItemsSource="{Binding SelectedRole.HandlersFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="HandlersEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #HandlersTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+            <!--Files-->
+            <Border
+                Grid.Column="{Binding FilesEditorGridSetting.Column}" 
+                Grid.Row="{Binding FilesEditorGridSetting.Row}"
+                Grid.RowSpan="{Binding FilesEditorGridSetting.RowSpan}"
+                Grid.ColumnSpan="{Binding FilesEditorGridSetting.ColumnSpan}"
+                IsVisible="{Binding FilesEditorGridSetting.IsVisible}"
+                Classes="BorderStyle">
+                <Grid RowDefinitions="Auto,Auto,*">
+                    <TextBlock Classes="EditorHeaderStyle" Text="Files"/>
+                    <ScrollViewer
+                        Grid.Row="1"
+                        HorizontalScrollBarVisibility="Auto" 
+                        VerticalScrollBarVisibility="Disabled">
+                        <TabStrip
+                            x:Name="FilesTabStrip"
+                            Classes="TabStripStyle"
+                            Tag="{x:Static common:Editor.Files}"
+                            ItemsSource="{Binding SelectedRole.FilesFiles}"
+                            SelectionChanged="TabStrip_OnSelectionChanged">
+                            <TabStrip.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding File.FileName}" />
+                                </DataTemplate>
+                            </TabStrip.ItemTemplate>
+                        </TabStrip>
+                    </ScrollViewer>
+                    <avaloniaEdit:TextEditor
+                        x:Name="FilesEditor"
+                        Grid.Row="2"
+                        Classes="EditorStyle"
+                        Document="{Binding File.Content, Mode=TwoWay}"
+                        DataContext="{Binding #FilesTabStrip.((vm:EditorViewModel)SelectedItem)}">
+                        <avaloniaEdit:TextEditor.ContextFlyout>
+                            <MenuFlyout>
+                                <MenuItem Header="Copy" InputGesture="ctrl+C" Command="{Binding CopyMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Cut" InputGesture="ctrl+X" Command="{Binding CutMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="Paste" InputGesture="ctrl+V"
+                                          Command="{Binding PasteMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                                <MenuItem Header="-" />
+                                <MenuItem Header="Select All" InputGesture="ctrl+A"
+                                          Command="{Binding SelectAllMouseCommand}"
+                                          CommandParameter="{Binding $parent[avaloniaEdit:TextEditor].TextArea}">
+                                </MenuItem>
+                            </MenuFlyout>
+                        </avaloniaEdit:TextEditor.ContextFlyout>
+                        <avaloniaEdit:TextEditor.Styles>
+                            <Style Selector="editing|LineNumberMargin">
+                                <Setter Property="MinWidthInDigits" Value="3" />
+                            </Style>
+                        </avaloniaEdit:TextEditor.Styles>
+                    </avaloniaEdit:TextEditor>
+                </Grid>
+            </Border>
+        </Grid>
+    </DockPanel>
+</Window>

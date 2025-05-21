@@ -1,0 +1,57 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net9.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Folder Include="Assets\Fonts\" />
+        <AvaloniaResource Include="Assets\**"/>
+        <Folder Include="Assets\Icons\" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia" Version="11.3.0" />
+        <PackageReference Include="Avalonia.AvaloniaEdit" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.0" />
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.0" />
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.0" />
+        <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.0">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="AvaloniaEdit.TextMate" Version="11.3.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.5" />
+        <PackageReference Include="TextMateSharp.Grammars" Version="1.0.66" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\Nunito-Italic-VariableFont_wght.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\Nunito.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\OFL.txt" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\README.txt" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Black.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-BlackItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Bold.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-BoldItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-ExtraBold.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-ExtraBoldItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-ExtraLight.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-ExtraLightItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Italic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Light.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-LightItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Medium.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-MediumItalic.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-Regular.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-SemiBold.ttf" />
+      <UpToDateCheckInput Remove="Assets\Fonts\Nunito\static\Nunito-SemiBoldItalic.ttf" />
+    </ItemGroup>
+</Project>

@@ -1,0 +1,40 @@
+name: Publish AppImage
+
+on:
+  push:
+    tags:
+      - "*"
+
+env:
+  DOTNET_VERSION: '9.0.x' # The .NET SDK version to use
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    name: Build AppImage
+    
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v4
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          sudo add-apt-repository universe
+          sudo apt install libfuse2t64
+          dotnet tool install -g KuiperZone.PupNet
+
+      - name: Run PupNet
+        run: pupnet --kind appimage
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: Deploy/bin/Ansroled.x86_64.AppImage
+          token: ${{ secrets.GITHUB_TOKEN }}  
